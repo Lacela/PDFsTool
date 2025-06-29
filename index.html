@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bộ chọn chủ đề PDF</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .nested-dropdown {
+            margin-left: 1rem;
+        }
+        details > summary {
+            padding: 0.25rem 0;
+            font-weight: 500;
+        }
+        details[open] > summary {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-start p-4">
+    <div class="w-full max-w-md">
+        <h1 class="text-2xl font-bold text-gray-800 mb-4 text-center">Bộ chọn chủ đề PDF</h1>
+
+        <!-- Topic Selection with Filter-like Dropdowns -->
+        <div class="bg-white p-4 rounded-lg shadow-md mb-4">
+            <h2 class="text-lg font-semibold mb-2">Chọn chủ đề có PDF</h2>
+            <div id="topicFilters" class="space-y-2 max-h-64 overflow-y-auto"></div>
+            <div class="flex space-x-2 mt-4">
+                <button id="downloadBtn" class="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:bg-gray-400" disabled>Tải xuống PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base URL for topics.json (replace with your GitHub Pages URL)
+        const TOPICS_URL = './topics.json';
+
+        // Initial empty topic hierarchy
+        let topics = {};
+
+        // Fetch topics from topics.json
+        async function fetchTopics() {
+            try {
+                const response = await fetch(TOPICS_URL);
+                if (!response.ok) throw new Error('Failed to fetch topics');
+                topics = await response.json();
+                renderTopicFilters();
+            } catch (error) {
+                console.error('Error fetching topics:', error);
+                alert('Lỗi khi tải danh sách chủ đề: ' + error.message);
+                topics = {};
+                renderTopicFilters();
+            }
+        }
+
+        // Convert data URL to ArrayBuffer
+        async function dataUrlToArrayBuffer(dataUrl) {
+            const response = await fetch(dataUrl);
+            return await response.arrayBuffer();
+        }
+
+        // Download individual PDFs
+        async function downloadPdf(dataUrl, fileName) {
+            try {
+                const pdfBytes = await dataUrlToArrayBuffer(dataUrl);
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = fileName;
+                link.click();
+                URL.revokeObjectURL(link.href);
+            } catch (error) {
+                console.error('Error downloading PDF:', error);
+                alert('Lỗi khi tải xuống PDF: ' + fileName);
+            }
+        }
+
+        // Store selected topics
+        let selectedTopics = [];
+
+        // Render filter-like topic selectors with proper hierarchy
+        function renderTopicFilters() {
+            const topicFiltersDiv = document.getElementById('topicFilters');
+            topicFiltersDiv.innerHTML = '';
+            selectedTopics = [];
+
+            function createFilter(level, prefix = '', container = topicFiltersDiv) {
+                Object.keys(level).forEach(key => {
+                    const path = prefix ? `${prefix}.${key}` : key;
+                    
+                    if (level[key].pdfs) {
+                        const checkboxContainer = document.createElement('div');
+                        checkboxContainer.className = 'flex items-center py-1';
+                        checkboxContainer.innerHTML = `
+                            <input type="checkbox" id="${path}" class="mr-2">
+                            <label for="${path}" class="cursor-pointer">${key}</label>
+                        `;
+                        container.appendChild(checkboxContainer);
+                        
+                        const checkbox = checkboxContainer.querySelector('input');
+                        checkbox.addEventListener('change', (e) => {
+                            if (e.target.checked) {
+                                selectedTopics.push(path);
+                            } else {
+                                const index = selectedTopics.indexOf(path);
+                                if (index > -1) selectedTopics.splice(index, 1);
+                            }
+                            updateDownloadButton();
+                        });
+                    } else {
+                        const details = document.createElement('details');
+                        details.className = 'w-full';
+                        details.innerHTML = `
+                            <summary class="cursor-pointer list-none select-none hover:bg-gray-50 rounded px-2">
+                                <span class="inline-block w-4 text-center">▶</span>
+                                ${key}
+                            </summary>
+                            <div class="nested-dropdown ml-4 mt-1 border-l-2 border-gray-200 pl-2"></div>
+                        `;
+                        container.appendChild(details);
+                        
+                        const summary = details.querySelector('summary');
+                        const arrow = summary.querySelector('span');
+                        details.addEventListener('toggle', () => {
+                            arrow.textContent = details.open ? '▼' : '▶';
+                        });
+                        
+                        const nestedContainer = details.querySelector('.nested-dropdown');
+                        createFilter(level[key], path, nestedContainer);
+                    }
+                });
+            }
+
+            createFilter(topics);
+        }
+
+        // Update download button state
+        function updateDownloadButton() {
+            const downloadBtn = document.getElementById('downloadBtn');
+            if (selectedTopics.length > 0) {
+                downloadBtn.disabled = false;
+                downloadBtn.onclick = async () => {
+                    for (const path of selectedTopics) {
+                        let current = topics;
+                        for (let key of path.split('.')) {
+                            current = current[key];
+                        }
+                        
+                        if (current.pdfs) {
+                            const topicName = path.split('.').pop();
+                            if (current.pdfs.form) {
+                                await downloadPdf(current.pdfs.form, `${topicName}_bieumau.pdf`);
+                            }
+                            await new Promise(resolve => setTimeout(resolve, 500));
+                            if (current.pdfs.manual) {
+                                await downloadPdf(current.pdfs.manual, `${topicName}_huongdan.pdf`);
+                            }
+                            await new Promise(resolve => setTimeout(resolve, 500));
+                        }
+                    }
+                    alert(`Đã tải xuống ${selectedTopics.length} chủ đề thành công!`);
+                };
+            } else {
+                downloadBtn.disabled = true;
+                downloadBtn.onclick = null;
+            }
+        }
+
+        // Initialize
+        fetchTopics();
+    </script>
+</body>
+</html>
