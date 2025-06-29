@@ -3,45 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bộ chọn chủ đề PDF</title>
+    <title>Bộ chọn chủ đề PDF - Vietcombank</title>
+    <link rel="icon" type="image/png" href="./logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'vcb-green': {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            950: '#052e16'
+                        },
+                        'vcb-primary': '#00A651',
+                        'vcb-secondary': '#005A2F',
+                        'vcb-accent': '#7CB342'
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
         }
         .nested-dropdown {
             margin-left: 1rem;
         }
         details > summary {
-            padding: 0.25rem 0;
+            padding: 0.5rem 0;
             font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        details > summary:hover {
+            color: #00A651;
         }
         details[open] > summary {
             margin-bottom: 0.5rem;
+            color: #00A651;
+        }
+        .vcb-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 166, 81, 0.1), 0 10px 10px -5px rgba(0, 166, 81, 0.04);
+        }
+        .vcb-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid rgba(0, 166, 81, 0.1);
+        }
+        .logo-decoration {
+            opacity: 0.1;
+            position: absolute;
+            right: -50px;
+            top: -30px;
+            transform: rotate(15deg);
+            z-index: 0;
+        }
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+        input[type="checkbox"]:checked {
+            background-color: #00A651;
+            border-color: #00A651;
+        }
+        input[type="checkbox"]:focus {
+            ring-color: #00A651;
+            border-color: #00A651;
+        }
+        .download-btn {
+            background: linear-gradient(135deg, #00A651 0%, #16a34a 100%);
+            transition: all 0.3s ease;
+        }
+        .download-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(0, 166, 81, 0.3);
+        }
+        .download-btn:disabled {
+            background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-start p-4">
-    <div class="w-full max-w-md">
-        <h1 class="text-2xl font-bold text-gray-800 mb-4 text-center">Bộ chọn chủ đề PDF</h1>
+<body class="min-h-screen flex flex-col items-center justify-start p-6">
+    <!-- Header Section -->
+    <div class="w-full max-w-4xl mb-8">
+        <div class="text-center">
+            <div class="flex items-center justify-center mb-4">
+                <img src="./logo.png" alt="Vietcombank Logo" class="w-12 h-12 mr-3">
+                <h1 class="text-3xl font-bold text-vcb-secondary">
+                    VIETCOMBANK HỖ TRỢ DOANH NGHIỆP
+                </h1>
+            </div>
+            <div class="w-24 h-1 bg-gradient-to-r from-vcb-primary to-vcb-accent mx-auto rounded-full"></div>
+        </div>
+    </div>
 
-        <!-- Topic Selection with Filter-like Dropdowns -->
-        <div class="bg-white p-4 rounded-lg shadow-md mb-4">
-            <h2 class="text-lg font-semibold mb-2">Chọn chủ đề có PDF</h2>
-            <div id="topicFilters" class="space-y-2 max-h-64 overflow-y-auto"></div>
-            <div class="flex space-x-2 mt-4">
-                <button id="downloadBtn" class="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:bg-gray-400" disabled>Tải xuống PDF</button>
+    <!-- Main Content -->
+    <div class="w-full max-w-4xl">
+        <div class="vcb-card vcb-shadow rounded-2xl p-8 relative overflow-hidden">
+            <!-- Decorative Logo -->
+            <img src="./logo-vietcombank" alt="VCB Decoration" class="logo-decoration w-32 h-32">
+            
+            <div class="content-wrapper">
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-vcb-secondary mb-2 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-vcb-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        HÃY CHỌN BIỂU MẪU ĐỂ TẢI XUỐNG
+                    </h2>
+                    <p class="text-gray-600 text-sm">
+                        (Có kèm file hướng dẫn chi tiết cho từng biểu mẫu)
+                    </p>
+                </div>
+
+                <!-- Topic Selection Area -->
+                <div class="bg-white rounded-xl border border-vcb-green-200 p-6 mb-6">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-5 h-5 mr-2 text-vcb-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h2a2 2 0 012 2v0H8v0z"></path>
+                        </svg>
+                        <h3 class="font-semibold text-vcb-secondary">Danh sách biểu mẫu</h3>
+                    </div>
+                    
+                    <div id="topicFilters" class="space-y-3 max-h-96 overflow-y-auto pr-2 custom-scrollbar"></div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button id="downloadBtn" class="download-btn text-white py-3 px-6 rounded-xl font-semibold text-lg flex items-center justify-center disabled:cursor-not-allowed transition-all duration-300" disabled>
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Tải xuống PDF
+                    </button>
+                    
+                    <button id="clearBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-6 rounded-xl font-semibold text-lg flex items-center justify-center transition-all duration-300">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        Xóa lựa chọn
+                    </button>
+                </div>
+
+                <!-- Selected Items Counter -->
+                <div id="selectedCounter" class="mt-4 text-center text-sm text-gray-600 hidden">
+                    <span class="bg-vcb-green-100 text-vcb-secondary px-3 py-1 rounded-full">
+                        Đã chọn: <span id="selectedCount">0</span> biểu mẫu
+                    </span>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-        // Base URL for topics.json (replace with your GitHub Pages URL)
-        const TOPICS_URL = './topics.json';
+    <!-- Footer -->
+    <div class="w-full max-w-4xl mt-8 text-center">
+        <p class="text-gray-500 text-sm">
+            © 2025 Vietcombank - Ngân hàng TMCP Ngoại thương Việt Nam
+        </p>
+    </div>
 
-        // Initial empty topic hierarchy
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #00A651;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #16a34a;
+        }
+    </style>
+
+    <script>
+        // Base URL for topics.json
+        const TOPICS_URL = './topics.json';
         let topics = {};
+        let selectedTopics = [];
 
         // Fetch topics from topics.json
         async function fetchTopics() {
@@ -52,10 +206,26 @@
                 renderTopicFilters();
             } catch (error) {
                 console.error('Error fetching topics:', error);
-                alert('Lỗi khi tải danh sách chủ đề: ' + error.message);
+                showNotification('Lỗi khi tải danh sách chủ đề: ' + error.message, 'error');
                 topics = {};
                 renderTopicFilters();
             }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+                type === 'error' ? 'bg-red-500 text-white' : 
+                type === 'success' ? 'bg-green-500 text-white' : 
+                'bg-blue-500 text-white'
+            }`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
         }
 
         // Convert data URL to ArrayBuffer
@@ -76,12 +246,9 @@
                 URL.revokeObjectURL(link.href);
             } catch (error) {
                 console.error('Error downloading PDF:', error);
-                alert('Lỗi khi tải xuống PDF: ' + fileName);
+                showNotification('Lỗi khi tải xuống PDF: ' + fileName, 'error');
             }
         }
-
-        // Store selected topics
-        let selectedTopics = [];
 
         // Render filter-like topic selectors with proper hierarchy
         function renderTopicFilters() {
@@ -95,10 +262,11 @@
                     
                     if (level[key].pdfs) {
                         const checkboxContainer = document.createElement('div');
-                        checkboxContainer.className = 'flex items-center py-1';
+                        checkboxContainer.className = 'flex items-center py-2 px-3 hover:bg-vcb-green-50 rounded-lg transition-colors duration-200';
                         checkboxContainer.innerHTML = `
-                            <input type="checkbox" id="${path}" class="mr-2">
-                            <label for="${path}" class="cursor-pointer">${key}</label>
+                            <input type="checkbox" id="${path}" class="mr-3 w-4 h-4 text-vcb-primary border-gray-300 rounded focus:ring-vcb-primary focus:ring-2">
+                            <label for="${path}" class="cursor-pointer flex-1 text-gray-700 hover:text-vcb-secondary">${key}</label>
+                            <span class="text-xs text-gray-400 ml-2">PDF</span>
                         `;
                         container.appendChild(checkboxContainer);
                         
@@ -111,23 +279,25 @@
                                 if (index > -1) selectedTopics.splice(index, 1);
                             }
                             updateDownloadButton();
+                            updateSelectedCounter();
                         });
                     } else {
                         const details = document.createElement('details');
                         details.className = 'w-full';
                         details.innerHTML = `
-                            <summary class="cursor-pointer list-none select-none hover:bg-gray-50 rounded px-2">
-                                <span class="inline-block w-4 text-center">▶</span>
-                                ${key}
+                            <summary class="cursor-pointer list-none select-none hover:bg-vcb-green-50 rounded-lg px-3 py-2 flex items-center">
+                                <span class="inline-block w-4 text-center text-vcb-primary transition-transform duration-200">▶</span>
+                                <span class="ml-2 font-medium text-gray-700">${key}</span>
+                                <span class="ml-auto text-xs text-gray-400">Thư mục</span>
                             </summary>
-                            <div class="nested-dropdown ml-4 mt-1 border-l-2 border-gray-200 pl-2"></div>
+                            <div class="nested-dropdown ml-4 mt-2 border-l-2 border-vcb-green-200 pl-4"></div>
                         `;
                         container.appendChild(details);
                         
                         const summary = details.querySelector('summary');
                         const arrow = summary.querySelector('span');
                         details.addEventListener('toggle', () => {
-                            arrow.textContent = details.open ? '▼' : '▶';
+                            arrow.style.transform = details.open ? 'rotate(90deg)' : 'rotate(0deg)';
                         });
                         
                         const nestedContainer = details.querySelector('.nested-dropdown');
@@ -139,12 +309,35 @@
             createFilter(topics);
         }
 
+        // Update selected counter
+        function updateSelectedCounter() {
+            const counter = document.getElementById('selectedCounter');
+            const count = document.getElementById('selectedCount');
+            
+            if (selectedTopics.length > 0) {
+                counter.classList.remove('hidden');
+                count.textContent = selectedTopics.length;
+            } else {
+                counter.classList.add('hidden');
+            }
+        }
+
         // Update download button state
         function updateDownloadButton() {
             const downloadBtn = document.getElementById('downloadBtn');
             if (selectedTopics.length > 0) {
                 downloadBtn.disabled = false;
                 downloadBtn.onclick = async () => {
+                    downloadBtn.disabled = true;
+                    downloadBtn.innerHTML = `
+                        <svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Đang tải xuống...
+                    `;
+
+                    let downloadCount = 0;
                     for (const path of selectedTopics) {
                         let current = topics;
                         for (let key of path.split('.')) {
@@ -155,21 +348,43 @@
                             const topicName = path.split('.').pop();
                             if (current.pdfs.form) {
                                 await downloadPdf(current.pdfs.form, `${topicName}_bieumau.pdf`);
+                                downloadCount++;
                             }
                             await new Promise(resolve => setTimeout(resolve, 500));
                             if (current.pdfs.manual) {
                                 await downloadPdf(current.pdfs.manual, `${topicName}_huongdan.pdf`);
+                                downloadCount++;
                             }
                             await new Promise(resolve => setTimeout(resolve, 500));
                         }
                     }
-                    alert(`Đã tải xuống ${selectedTopics.length} chủ đề thành công!`);
+                    
+                    showNotification(`Đã tải xuống ${downloadCount} file PDF thành công!`, 'success');
+                    
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML = `
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Tải xuống PDF
+                    `;
                 };
             } else {
                 downloadBtn.disabled = true;
                 downloadBtn.onclick = null;
             }
         }
+
+        // Clear all selections
+        document.getElementById('clearBtn').onclick = () => {
+            selectedTopics = [];
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            updateDownloadButton();
+            updateSelectedCounter();
+            showNotification('Đã xóa tất cả lựa chọn', 'info');
+        };
 
         // Initialize
         fetchTopics();
